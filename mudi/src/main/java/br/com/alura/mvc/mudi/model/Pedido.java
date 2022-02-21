@@ -2,28 +2,35 @@ package br.com.alura.mvc.mudi.model;
 
 import java.time.LocalDate;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+
+@Entity
 public class Pedido {
 	
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
+	
 	private String nomeProduto;
+	
 	private Double valor;
+	
 	private LocalDate dataEntrega;
+	
 	private String url;
+	
 	private String descricao;
+	
 	private String imagem;
 	
 	public Pedido() {
 		
 	}
 
-	public Pedido
-	(
-		String nomeProduto, 
-		Double valor, 
-		LocalDate dataEntrega, 
-		String url, 
-		String descricao,
-		String imagem
-	) {
+	public Pedido(String nomeProduto, Double valor, LocalDate dataEntrega, String url, String descricao, String imagem) {
 		this.nomeProduto = nomeProduto;
 		this.valor = valor;
 		this.dataEntrega = dataEntrega;
