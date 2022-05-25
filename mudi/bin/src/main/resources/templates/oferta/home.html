@@ -1,0 +1,70 @@
+<html xmlns:th="https://www.thymeleaf.org">
+	<meta charset="UTF-8"/>
+	<head th:replace="~{base :: head}"></head>
+	<body onload="onload()">	
+		<div th:replace="~{base :: logo}"></div>
+
+		<div class="container" id="ofertas">
+			<div th:replace="~{base :: titulo('Meus Pedidos')}"></div>
+		
+			<nav class="navbar navbar-expand navbar-light bg-light d-flex justify-content-between mb-2">
+				<div class="navbar-nav">
+					<a th:classappend="${status} == null ? 'active'" class="nav-item nav-link" th:href="@{/usuario/pedido}">Todos</a>
+					<a th:classappend="${status} == 'aguardando' ? 'active'" class="nav-item nav-link" th:href="@{/usuario/pedido/aguardando}">Aguardando</a>
+					<a th:classappend="${status} == 'aprovado' ? 'active'" class="nav-item nav-link" th:href="@{/usuario/pedido/aprovado}">Aprovado</a>
+					<a th:classappend="${status} == 'entregue' ? 'active'" class="nav-item nav-link" th:href="@{/usuario/pedido/entregue}">Entregue</a>
+				</div>
+				<a href="/pedido/formulario"><button class="btn btn-outline-secondary mt-2 my-sm-0">Novo</button></a>
+			</nav>
+		
+			<div class="card mb-3" v-for="pedido in pedidos">
+				
+				<div class="card-header alert-warning">{{ pedido.nomeProduto }}</div>
+			
+				<div class="card-body">
+					<div class="row">
+						<div class="col-12 col-sm-8 mb-3">
+							
+							<div class="row ">
+								<div class="col-md-5">Valor: <input v-model="pedido.valorNegociado" />
+								</div>
+								<div class="col-md-6">Data da entrega: <input v-model="pedido.dataDaEntrega" />
+								</div>
+							</div>
+							
+							<div>Produto: <a v-bind:href="pedido.urlProduto">{{ pedido.nomeProduto }}</a></div> 
+							
+							 
+							<div>Descrição:</div>
+							<div>
+								<textarea class="form-control" v-bind="pedido.descricao">{{ pedido.descricao }}</textarea>
+							</div>
+						</div>
+						<div class="col-12 col-sm-4">
+							<div>
+								<img class="img-thumbnail" v-bind:src="pedido.urlImagem" />
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>			
+		<script type="text/javascript">
+			function onload(){				
+				var app = new Vue({
+					el: "#ofertas",
+					data: {
+						pedidos: []
+					},
+					mounted () {
+					    axios
+					      .get('http://localhost:8080/api/pedidos/aguardando')
+					      .then(response => (this.pedidos = response.data))
+					}
+				});
+			}
+		</script>		
+		<script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+		<script src="https://unpkg.com/axios/dist/axios.min.js"></script>		
+	</body>
+</html>
