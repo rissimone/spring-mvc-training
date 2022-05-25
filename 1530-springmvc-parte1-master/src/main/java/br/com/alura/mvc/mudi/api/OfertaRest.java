@@ -1,16 +1,15 @@
 package br.com.alura.mvc.mudi.api;
 
-import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.alura.mvc.mudi.dto.RequisicaoNovaOferta;
+import br.com.alura.mvc.mudi.model.Oferta;
 import br.com.alura.mvc.mudi.model.Pedido;
-import br.com.alura.mvc.mudi.model.StatusPedido;
 import br.com.alura.mvc.mudi.repository.PedidoRepository;
 
 @RestController
@@ -20,13 +19,23 @@ public class OfertaRest {
 	@Autowired
 	private PedidoRepository pedidoRepository; 
 
-	@GetMapping("/oferta")
-	public List<Pedido> getFormularioParaOfertas() {
+	@PostMapping("/oferta")
+	public Oferta criaOfertas(RequisicaoNovaOferta requisicao) {
 		
-		Sort sort = Sort.by("id").descending();
-		PageRequest pagina = PageRequest.of(0, 10, sort);		
-		List<Pedido> pedidosAguardandoOfertas = pedidoRepository.findByStatus(StatusPedido.AGUARDANDO, pagina);
+		Optional<Pedido> idPedidoRequisicao = pedidoRepository.findById(requisicao.pedidoId);
 		
-		return pedidosAguardandoOfertas;
+		if(!idPedidoRequisicao.isPresent()) {
+			return null;
+		}
+		
+		Pedido pedido = idPedidoRequisicao.get();		
+		Oferta nova = requisicao.toOferta();
+		
+		nova.setPedido(pedido);
+		pedido.getOfertas().add(nova);
+		
+		pedidoRepository.save(pedido);
+				
+		return nova;
 	}
 }
